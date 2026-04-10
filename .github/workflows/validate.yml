@@ -83,19 +83,40 @@ jobs:
           pip install -r python/requirements.txt
           pip install pytest pandas
       
-      - name: Run golden case validation
+      - name: Run pediatric dosing golden cases
         run: |
           cd python
-          python -m pytest tests/test_golden_cases.py -v --tb=short
+          python -m pytest tests/test_pediatric_dosing.py -k golden -v --tb=short
         env:
           VALIDATION_TOLERANCE: "0.005"
-      
-      - name: Generate validation report
+
+      - name: Run fluids golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_fluids_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.01"
+
+      - name: Run severity scores golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_scores_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.0"
+
+      - name: Run neonatal golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_neonatal_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.02"
+
+      - name: Generate combined validation report
         if: always()
         run: |
           cd python
           python ci/generate_golden_case_report.py \
-            --golden_cases golden_cases/pediatric_golden_cases.json \
+            --golden_cases golden_cases/ \
             --output validation_report.html
       
       - name: Upload golden case report

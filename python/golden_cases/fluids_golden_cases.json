@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "description": "Golden cases for pediatric fluid and electrolyte calculations",
+    "source": "Holliday-Segar formula, AAP Textbook of PALS, Lexi-Drugs",
+    "tolerance_percent": 1.0,
+    "version": "1.0.0",
+    "last_updated": "2026-04-09",
+    "verified_by": "Timothy Hartzog, MD"
+  },
+  "fluid_calculations": [
+    {
+      "id": "MAINTENANCE_INFANT_7KG_001",
+      "clinical_scenario": "6-month-old infant requiring maintenance fluids post-operatively",
+      "calculation_type": "holliday_segar_maintenance",
+      "inputs": {
+        "weight_kg": 7.0,
+        "age_months": 6
+      },
+      "expected_output": {
+        "total_daily_ml": 700.0,
+        "hourly_rate_ml": 29.17,
+        "fluid_phase_1_kg": 100.0,
+        "fluid_phase_2_kg": 0.0,
+        "fluid_phase_3_kg": 0.0,
+        "sodium_meq_daily": 35.0,
+        "potassium_meq_daily": 21.0,
+        "chloride_meq_daily": 30.0
+      },
+      "source": "Holliday-Segar formula: 7kg × 100 mL/kg = 700 mL/day",
+      "reference_url": "https://pediatrics.aappublications.org/content/pediatrics/22/1/105.full.pdf",
+      "calculation_method": "100 mL/kg × 7 kg = 700 mL total daily",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Standard maintenance for infant <10 kg"
+    },
+    {
+      "id": "MAINTENANCE_TODDLER_14KG_001",
+      "clinical_scenario": "2-year-old hospitalized with gastroenteritis requiring maintenance fluids",
+      "calculation_type": "holliday_segar_maintenance",
+      "inputs": {
+        "weight_kg": 14.0,
+        "age_months": 24
+      },
+      "expected_output": {
+        "total_daily_ml": 1200.0,
+        "hourly_rate_ml": 50.0,
+        "fluid_phase_1_kg": 100.0,
+        "fluid_phase_2_kg": 50.0,
+        "fluid_phase_3_kg": 0.0,
+        "sodium_meq_daily": 60.0,
+        "potassium_meq_daily": 36.0,
+        "chloride_meq_daily": 54.0
+      },
+      "source": "Holliday-Segar formula: (10 × 100) + (4 × 50) = 1200 mL/day",
+      "reference_url": "https://pediatrics.aappublications.org/content/pediatrics/22/1/105.full.pdf",
+      "calculation_method": "First 10 kg: 100 mL/kg = 1000 mL; Next 4 kg: 50 mL/kg = 200 mL; Total = 1200 mL",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Two-phase formula: child between 10-20 kg"
+    },
+    {
+      "id": "MAINTENANCE_SCHOOL_AGE_30KG_001",
+      "clinical_scenario": "8-year-old requiring ongoing IV maintenance during hospitalization",
+      "calculation_type": "holliday_segar_maintenance",
+      "inputs": {
+        "weight_kg": 30.0,
+        "age_months": 96
+      },
+      "expected_output": {
+        "total_daily_ml": 1700.0,
+        "hourly_rate_ml": 70.83,
+        "fluid_phase_1_kg": 100.0,
+        "fluid_phase_2_kg": 50.0,
+        "fluid_phase_3_kg": 20.0,
+        "sodium_meq_daily": 85.0,
+        "potassium_meq_daily": 51.0,
+        "chloride_meq_daily": 76.5
+      },
+      "source": "Holliday-Segar formula: (10 × 100) + (10 × 50) + (10 × 20) = 1700 mL/day",
+      "reference_url": "https://pediatrics.aappublications.org/content/pediatrics/22/1/105.full.pdf",
+      "calculation_method": "First 10 kg: 1000 mL; 10-20 kg: 500 mL; >20 kg: 200 mL; Total = 1700 mL",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Three-phase formula: child >20 kg"
+    },
+    {
+      "id": "MAINTENANCE_NEWBORN_4KG_001",
+      "clinical_scenario": "3-day-old term infant on IV fluids",
+      "calculation_type": "holliday_segar_maintenance",
+      "inputs": {
+        "weight_kg": 4.0,
+        "age_months": 0.1
+      },
+      "expected_output": {
+        "total_daily_ml": 400.0,
+        "hourly_rate_ml": 16.67,
+        "fluid_phase_1_kg": 100.0,
+        "fluid_phase_2_kg": 0.0,
+        "fluid_phase_3_kg": 0.0,
+        "sodium_meq_daily": 20.0,
+        "potassium_meq_daily": 12.0,
+        "chloride_meq_daily": 18.0
+      },
+      "source": "Holliday-Segar formula: 4 kg × 100 mL/kg = 400 mL/day",
+      "reference_url": "https://pediatrics.aappublications.org/content/pediatrics/22/1/105.full.pdf",
+      "calculation_method": "100 mL/kg × 4 kg = 400 mL total daily",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Neonatal maintenance fluid requirement"
+    },
+    {
+      "id": "DEFICIT_MILD_DEHYDRATION_10KG_001",
+      "clinical_scenario": "5-year-old with mild dehydration (5%) from viral gastroenteritis",
+      "calculation_type": "deficit_fluid_replacement",
+      "inputs": {
+        "weight_kg": 10.0,
+        "dehydration_percent": 5.0
+      },
+      "expected_output": {
+        "deficit_total_ml": 500.0,
+        "phase_1_bolus_ml": 200.0,
+        "phase_1_rate_ml_min": 3.33,
+        "phase_1_duration_minutes": 60,
+        "phase_2_remaining_ml": 300.0,
+        "phase_2_rate_ml_hour": 100.0,
+        "phase_2_duration_hours": 3.0
+      },
+      "source": "Standard dehydration protocol: 50 mL/kg × dehydration %",
+      "reference_url": "https://pediatrics.aappublications.org/",
+      "calculation_method": "Total deficit = 50 mL/kg × 10 kg × 5% = 500 mL; Phase 1: 20 mL/kg = 200 mL over 15-30 min; Phase 2: remaining 300 mL over 2-4 hours",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Mild dehydration: skin turgor normal, slightly decreased urine output"
+    },
+    {
+      "id": "DEFICIT_MODERATE_DEHYDRATION_15KG_001",
+      "clinical_scenario": "3-year-old with moderate dehydration (10%) requiring aggressive rehydration",
+      "calculation_type": "deficit_fluid_replacement",
+      "inputs": {
+        "weight_kg": 15.0,
+        "dehydration_percent": 10.0
+      },
+      "expected_output": {
+        "deficit_total_ml": 1500.0,
+        "phase_1_bolus_ml": 300.0,
+        "phase_1_rate_ml_min": 10.0,
+        "phase_1_duration_minutes": 30,
+        "phase_2_remaining_ml": 1200.0,
+        "phase_2_rate_ml_hour": 400.0,
+        "phase_2_duration_hours": 3.0
+      },
+      "source": "Standard dehydration protocol: 50 mL/kg × dehydration %",
+      "reference_url": "https://pediatrics.aappublications.org/",
+      "calculation_method": "Total deficit = 50 mL/kg × 15 kg × 10% = 1500 mL; Phase 1: 20 mL/kg = 300 mL over 15-30 min; Phase 2: remaining 1200 mL over 2-4 hours",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.01,
+      "notes": "Moderate dehydration: decreased skin turgor, tachycardia, oliguria"
+    }
+  ],
+  "validation_schema": {
+    "required_fields": [
+      "id",
+      "clinical_scenario",
+      "calculation_type",
+      "inputs",
+      "expected_output",
+      "source",
+      "verified_by"
+    ],
+    "calculation_types": [
+      "holliday_segar_maintenance",
+      "deficit_fluid_replacement",
+      "maintenance_plus_deficit"
+    ]
+  },
+  "tolerance_explanation": {
+    "rationale": "1% tolerance accounts for:",
+    "factors": [
+      "Rounding fluid rates to practical infusion amounts",
+      "Weight measurement variation (±50-100g acceptable)",
+      "Electrolyte requirement variation based on patient factors",
+      "Clinical judgment in determining appropriate rehydration rate"
+    ]
+  }
+}
