@@ -1,0 +1,359 @@
+name: Cross-Language Clinical Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run validation daily to catch any regressions
+    - cron: '0 2 * * *'
+
+env:
+  PYTHON_VERSION: '3.11'
+  R_VERSION: '4.3'
+
+jobs:
+  # ========================================================================
+  # JOB 1: Python Unit Tests
+  # ========================================================================
+  python-tests:
+    name: Python Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/requirements.txt
+          pip install pytest pytest-cov pytest-json-report
+      
+      - name: Run Python unit tests
+        run: |
+          cd python
+          pytest tests/ \
+            -v \
+            --cov=clinical_validators \
+            --cov-report=xml \
+            --cov-report=html \
+            --json-report \
+            --json-report-file=test_report.json
+      
+      - name: Upload Python coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./python/coverage.xml
+          flags: python
+          name: python-coverage
+      
+      - name: Store Python test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-test-results
+          path: python/test_report.json
+
+  # ========================================================================
+  # JOB 2: Golden Case Validation (Python)
+  # ========================================================================
+  golden-cases-python:
+    name: Golden Case Validation (Python)
+    runs-on: ubuntu-latest
+    needs: python-tests
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/requirements.txt
+          pip install pytest pandas
+      
+      - name: Run golden case validation
+        run: |
+          cd python
+          python -m pytest tests/test_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+      
+      - name: Generate validation report
+        if: always()
+        run: |
+          cd python
+          python ci/generate_golden_case_report.py \
+            --golden_cases golden_cases/pediatric_golden_cases.json \
+            --output validation_report.html
+      
+      - name: Upload golden case report
+        uses: actions/upload-artifact@v3
+        with:
+          name: golden-case-report
+          path: python/validation_report.html
+
+  # ========================================================================
+  # JOB 3: R Statistical Tests
+  # ========================================================================
+  r-tests:
+    name: R Statistical Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.R_VERSION }}
+          use-public-rspm: true
+      
+      - name: Install R dependencies
+        run: |
+          cd r/ClinicalValidators
+          Rscript -e "install.packages(c('devtools', 'testthat', 'lintr'))"
+          Rscript -e "devtools::install_deps(dependencies=TRUE)"
+      
+      - name: Run R tests
+        run: |
+          cd r/ClinicalValidators
+          Rscript -e "devtools::test()"
+      
+      - name: Run R linting
+        run: |
+          cd r/ClinicalValidators
+          Rscript -e "lintr::lint_package('R/')"
+
+  # ========================================================================
+  # JOB 4: Python vs R Cross-Validation
+  # ========================================================================
+  cross-language-validation:
+    name: Python vs R Cross-Validation
+    runs-on: ubuntu-latest
+    needs: [python-tests, r-tests]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.R_VERSION }}
+          use-public-rspm: true
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/requirements.txt
+          pip install rpy2 pandas numpy
+          cd r/ClinicalValidators
+          Rscript -e "install.packages(c('devtools', 'testthat'))"
+          Rscript -e "devtools::install_deps()"
+      
+      - name: Run cross-language validation
+        run: |
+          python ci/cross_validate_languages.py \
+            --compare python-r \
+            --tolerance-config ci/tolerance_matrix.yaml \
+            --output cross_validation_results.json
+      
+      - name: Parse results
+        run: |
+          python ci/parse_validation_results.py cross_validation_results.json
+      
+      - name: Upload cross-validation results
+        uses: actions/upload-artifact@v3
+        with:
+          name: cross-validation-results
+          path: cross_validation_results.json
+
+  # ========================================================================
+  # JOB 5: Documentation Verification
+  # ========================================================================
+  documentation-check:
+    name: Verify Documentation Completeness
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+      
+      - name: Check calculation sources
+        run: |
+          python ci/verify_documentation.py \
+            --check sources \
+            --registry docs/VERIFICATION_REGISTRY.md
+      
+      - name: Check golden case coverage
+        run: |
+          python ci/verify_documentation.py \
+            --check golden_cases \
+            --cases python/golden_cases/
+      
+      - name: Check tolerance matrix
+        run: |
+          python ci/verify_documentation.py \
+            --check tolerances \
+            --matrix ci/tolerance_matrix.yaml
+
+  # ========================================================================
+  # JOB 6: Precision & Floating-Point Validation
+  # ========================================================================
+  precision-validation:
+    name: Floating-Point Precision Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r python/requirements.txt
+          pip install numpy scipy
+      
+      - name: Run precision tests
+        run: |
+          cd python
+          pytest tests/test_precision.py -v --tb=short
+      
+      - name: Test extreme values
+        run: |
+          python ci/test_extreme_values.py \
+            --config ci/extreme_values.yaml \
+            --output precision_report.txt
+      
+      - name: Upload precision report
+        uses: actions/upload-artifact@v3
+        with:
+          name: precision-report
+          path: python/precision_report.txt
+
+  # ========================================================================
+  # JOB 7: Generate Validation Report & Comment on PR
+  # ========================================================================
+  validation-summary:
+    name: Generate Validation Summary
+    runs-on: ubuntu-latest
+    needs: [golden-cases-python, cross-language-validation, precision-validation]
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Generate comprehensive report
+        run: |
+          python ci/generate_validation_report.py \
+            --golden-cases golden-case-report/ \
+            --cross-validation cross-validation-results/ \
+            --precision precision-report/ \
+            --output validation_summary.md
+      
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('validation_summary.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+      
+      - name: Upload summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-summary
+          path: validation_summary.md
+      
+      - name: Fail if validation failed
+        if: failure()
+        run: |
+          echo "❌ Clinical validation failed - see artifacts for details"
+          exit 1
+
+# ============================================================================
+# WORKFLOW STATUS BADGE & NOTIFICATION
+# ============================================================================
+
+  notify-results:
+    name: Notify Validation Results
+    runs-on: ubuntu-latest
+    needs: [validation-summary]
+    if: always()
+    
+    steps:
+      - name: Check validation status
+        run: |
+          if [ "${{ needs.validation-summary.result }}" == "success" ]; then
+            echo "✅ All clinical validations passed"
+            echo "STATUS=PASS" >> $GITHUB_ENV
+          else
+            echo "❌ Clinical validations failed"
+            echo "STATUS=FAIL" >> $GITHUB_ENV
+          fi
+      
+      - name: Create status badge
+        run: |
+          python << 'EOF'
+          import json
+          status = "${{ env.STATUS }}"
+          color = "brightgreen" if status == "PASS" else "red"
+          badge = {
+            "schemaVersion": 1,
+            "label": "Clinical Validation",
+            "message": status,
+            "color": color
+          }
+          with open('validation_badge.json', 'w') as f:
+            json.dump(badge, f)
+          EOF
+      
+      - name: Upload status badge
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-badge
+          path: validation_badge.json

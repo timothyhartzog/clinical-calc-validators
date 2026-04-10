@@ -1,0 +1,376 @@
+# Precision Tolerance Matrix for Clinical Calculations
+# 
+# Defines acceptable tolerances for validating calculations across Python/R/Julia
+# These tolerances balance clinical accuracy with floating-point arithmetic realities
+#
+# Format: tolerance_type: absolute|relative, value: numeric, unit: optional
+# tolerance_type: "absolute" uses fixed tolerance (e.g., ±0.5 mg)
+# tolerance_type: "relative" uses percentage (e.g., ±0.5%)
+#
+# References:
+#   - IEEE 754 floating-point standards
+#   - Clinical rounding practices
+#   - Literature on inter-observer agreement in medicine
+
+---
+# ============================================================================
+# PEDIATRIC DOSING TOLERANCES
+# ============================================================================
+
+dosing:
+  description: Weight-based medication dosing (mg, mcg)
+  subcategories:
+    
+    weight_based_antibiotics:
+      calculation: Weight × dose_per_kg
+      tolerance_type: relative
+      tolerance_value: 0.005  # ±0.5%
+      absolute_floor: 1       # At least 1 mg difference required to fail
+      rationale: |
+        Clinical rounding to nearest 5-10 mg for oral administration is
+        standard practice. ±0.5% tolerance accounts for:
+        - Weight measurement variability (±50-100g acceptable)
+        - Dose rounding to practical tablet/liquid amounts
+        - Inter-batch variation in pharmacy preparation
+      typical_range_mg: [50, 2000]
+      examples:
+        - input: "15 kg child, 25 mg/kg amoxicillin"
+          expected: 375.0
+          accepted_range: [372.5, 377.5]
+          notes: "Standard calculation; rounding to nearest 5 mg acceptable"
+
+    gentamicin_extended_interval:
+      calculation: Weight × 7.5 mg/kg
+      tolerance_type: relative
+      tolerance_value: 0.01  # ±1%
+      absolute_floor: 0.5    # mg
+      rationale: |
+        Extended-interval dosing (once-daily) requires slightly more precision
+        because dose optimization occurs during therapeutic drug monitoring.
+        ±1% tolerance accounts for TDM adjustment variability.
+      typical_range_mg: [25, 500]
+
+    electrolyte_dosing:
+      calculation: Weight × mEq_per_kg or mg_per_kg
+      tolerance_type: absolute
+      tolerance_value: 0.5  # ±0.5 mEq or mg
+      rationale: |
+        Electrolyte dosing requires absolute precision because of
+        narrow therapeutic windows. Clinical judgment allows ±1 unit
+        in practical administration.
+      typical_range: [5, 100]
+
+    vasoactive_drips:
+      calculation: mcg/kg/minute calculations
+      tolerance_type: relative
+      tolerance_value: 0.02  # ±2%
+      absolute_floor: 0.05   # mcg/kg/min
+      rationale: |
+        Vasoactive medications have tight therapeutic windows.
+        ±2% tolerance allows for:
+        - Syringe pump precision (±1-2% typical)
+        - Clinical titration adjustments
+        - IV fluid concentration variation
+      notes: "Requires standard concentration (typical: 100 mcg/mL, 250 mcg/mL)"
+
+# ============================================================================
+# GROWTH & ANTHROPOMETRY TOLERANCES
+# ============================================================================
+
+growth:
+  description: Growth chart percentile lookup, anthropometric calculations
+  subcategories:
+    
+    cdc_growth_percentile:
+      calculation: LMS interpolation from CDC data
+      tolerance_type: relative
+      tolerance_value: 0.01  # ±1%
+      absolute_floor: null
+      rationale: |
+        CDC growth chart lookup uses LMS (Lambda-Mu-Sigma) method.
+        Different interpolation algorithms may produce slightly different
+        results. ±1% tolerance reflects:
+        - Interpolation method differences (linear vs spline vs cubic)
+        - Rounding in published LMS tables
+        - Clinical measurement error (±0.5 cm height, ±0.1 kg weight)
+      typical_range_percentile: [5, 95]
+      reference: "CDC Growth Charts (NCHS), LMS parameters available at cdc.gov"
+
+    fenton_2013_growth:
+      calculation: Fenton 2013 neonatal growth chart percentile
+      tolerance_type: relative
+      tolerance_value: 0.01  # ±1%
+      absolute_floor: null
+      rationale: |
+        Fenton curves for preterm infants (22-42 weeks gestational age).
+        Same precision rationale as CDC charts.
+      reference: "Fenton TR. Arch Dis Child Fetal Neonatal Ed. 2013;98(5):F394-F398"
+
+    bmi_calculation:
+      calculation: weight_kg / (height_m ** 2)
+      tolerance_type: relative
+      tolerance_value: 0.01  # ±1%
+      absolute_floor: 0.1    # BMI units
+      rationale: |
+        BMI is simple mathematical operation, but measurement error dominates.
+        ±1% tolerance accounts for:
+        - Height measurement error (±1 cm at ~150 cm = ±0.4% effect)
+        - Weight measurement error (±0.2 kg)
+
+# ============================================================================
+# NEONATAL SEVERITY SCORES
+# ============================================================================
+
+severity_scores:
+  description: Integer-based severity scores (SNAP, SNAPPE, APGAR, etc)
+  subcategories:
+    
+    apgar_score:
+      calculation: Sum of 5 components (0-2 each) → 0-10 integer
+      tolerance_type: absolute
+      tolerance_value: 0  # Exact match required
+      absolute_floor: null
+      rationale: |
+        APGAR is discrete integer scoring. No tolerance for calculation errors.
+        Component assessment may vary by observer (interpretation question)
+        but mathematical sum must be exact.
+      typical_range: [0, 10]
+
+    snap_ii_score:
+      calculation: Sum of component scores
+      tolerance_type: absolute
+      tolerance_value: 0  # Exact match required
+      rationale: |
+        SNAP-II is additive integer score. Must match exactly.
+      typical_range: [0, 40]
+      reference: "Richardson DK, et al. J Pediatr. 2001;138(3):344-349"
+
+    snappe_ii_score:
+      calculation: SNAP-II + mortality risk factors
+      tolerance_type: absolute
+      tolerance_value: 0  # Exact integer match
+      rationale: |
+        Mortality prediction score requires exact calculation.
+      reference: "Richardson DK, et al. Pediatr Res. 2010;67(4):394-398"
+
+# ============================================================================
+# HEMODYNAMIC CALCULATIONS
+# ============================================================================
+
+hemodynamics:
+  description: MAP, cardiac output, SVR, PVR calculations
+  subcategories:
+    
+    mean_arterial_pressure:
+      calculation: "(SBP + 2×DBP) / 3"
+      tolerance_type: absolute
+      tolerance_value: 1.0  # ±1 mmHg
+      rationale: |
+        MAP is simple math but clinical measurement uncertainty dominates.
+        ±1 mmHg tolerance reflects:
+        - Manual blood pressure measurement error (±1-2 mmHg typical)
+        - Oscillometric device variability
+      typical_range_mmhg: [20, 100]
+
+    cardiac_output:
+      calculation: Heart rate × stroke volume
+      tolerance_type: relative
+      tolerance_value: 0.05  # ±5%
+      absolute_floor: 0.1    # L/min
+      rationale: |
+        CO calculation requires estimated parameters (SVR, CO indices).
+        Measurement method introduces ±5-10% error. ±5% tolerance allows for:
+        - Thermodilution measurement error
+        - Assumed cardiac function models
+        - Timing of measurements
+      notes: "Requires specified calculation method (Fick, thermodilution, echo)"
+
+    systemic_vascular_resistance:
+      calculation: "SVR = (MAP - CVP) / CO × 80"
+      tolerance_type: relative
+      tolerance_value: 0.05  # ±5%
+      rationale: |
+        SVR is derived from CO and pressure. Propagated error from CO
+        measurement dominates. ±5% tolerance.
+      units: "Wood units (mmHg·min/L)"
+
+    pulmonary_vascular_resistance:
+      calculation: "PVR = (MPAP - PAWP) / CO × 80"
+      tolerance_type: relative
+      tolerance_value: 0.05  # ±5%
+      units: "Wood units"
+      rationale: |
+        Similar error propagation as SVR. Requires cardiac catheterization
+        data or echocardiographic estimates.
+
+# ============================================================================
+# VENTILATOR & RESPIRATORY TOLERANCES
+# ============================================================================
+
+respiratory:
+  description: Ventilator settings, NTZ temperature, IWL calculations
+  subcategories:
+    
+    neutral_thermal_zone_temperature:
+      calculation: Temperature lookup or interpolation from published tables
+      tolerance_type: absolute
+      tolerance_value: 0.5  # ±0.5°C
+      absolute_floor: null
+      rationale: |
+        NTZ is small range (0.5-1.0°C bandwidth). Clinical incubators
+        maintain ±0.5°C precision. ±0.5°C tolerance reflects:
+        - Sensor calibration (±0.3°C typical)
+        - Interpolation between published values
+        - Individual patient variation
+      typical_range_celsius: [31, 36]
+      reference: "Scopes & Wolf (1966); Blackburn (2018)"
+
+    ventilator_settings_pip:
+      calculation: PIP based on lung compliance, resistance, desired volume
+      tolerance_type: absolute
+      tolerance_value: 2  # ±2 cm H2O
+      rationale: |
+        PIP is set empirically based on chest rise observation, not
+        calculation. ±2 cm H2O reflects:
+        - Ventilator pressure regulation accuracy
+        - Clinical adjustment margins
+      typical_range_cmh2o: [12, 35]
+
+    ventilator_settings_peep:
+      calculation: PEEP selection (often empirical)
+      tolerance_type: absolute
+      tolerance_value: 1  # ±1 cm H2O
+      rationale: |
+        PEEP is typically set as integer values (4, 5, 6, etc.).
+        ±1 cm H2O tolerance for any calculated recommendations.
+      typical_range_cmh2o: [4, 12]
+
+    insensible_water_loss:
+      calculation: "IWL = base × (TT + 1) where TT = gestational/postnatal variables"
+      tolerance_type: relative
+      tolerance_value: 0.10  # ±10%
+      units: "mL/kg/day"
+      rationale: |
+        IWL is highly variable and clinical measurement is indirect
+        (change in weight). ±10% tolerance reflects:
+        - Environmental variation (humidity, radiant warmers)
+        - Individual patient variation
+        - Measurement imprecision
+      reference: "Shaffer et al. Pediatr Clin North Am. 2009"
+
+# ============================================================================
+# NUTRITIONAL CALCULATIONS
+# ============================================================================
+
+nutrition:
+  description: TPN calculations, mineral requirements, feeding tolerance
+  subcategories:
+    
+    tpn_dextrose:
+      calculation: "Dextrose (g/day) = weight × target_g_per_kg"
+      tolerance_type: absolute
+      tolerance_value: 0.5  # ±0.5 g/day
+      rationale: |
+        TPN is compounded to nearest 0.5-1.0 g. ±0.5 g tolerance reflects
+        compounding precision and clinical titration margins.
+      units: "grams per day"
+
+    tpn_amino_acids:
+      calculation: "AA (g/day) = weight × target_g_per_kg"
+      tolerance_type: absolute
+      tolerance_value: 0.25  # ±0.25 g/day
+      rationale: |
+        Amino acid dosing requires precision to avoid toxicity.
+        ±0.25 g tolerance for standard compounding.
+
+    tpn_lipids:
+      calculation: "Lipid emulsion (g/day or infusion rate)"
+      tolerance_type: absolute
+      tolerance_value: 0.5  # ±0.5 g/day
+      rationale: |
+        Lipid dosing titrated slowly. ±0.5 g reflects standard escalation
+        protocol (1 g/kg/day increments).
+
+    minerals_calcium:
+      calculation: "Calcium requirement × weight"
+      tolerance_type: absolute
+      tolerance_value: 10  # ±10 mg elemental calcium
+      units: "mg elemental calcium"
+      rationale: |
+        Calcium dosing has reasonable margin for clinical adjustment.
+        ±10 mg tolerance = ±5% for typical 200 mg supplementation.
+
+# ============================================================================
+# LABORATORY VALUE PREDICTIONS
+# ============================================================================
+
+laboratory:
+  description: Predicted lab values, nomogram-based calculations
+  subcategories:
+    
+    phototherapy_threshold_bilirubin:
+      calculation: "Threshold lookup by age/gestational age (AAP 2009)"
+      tolerance_type: absolute
+      tolerance_value: 0.5  # ±0.5 mg/dL
+      units: "mg/dL"
+      rationale: |
+        Phototherapy threshold is published as discrete values for
+        age groups. ±0.5 mg/dL tolerance reflects:
+        - Measurement precision (±0.2 mg/dL typical)
+        - Rounding from continuous nomogram
+      reference: "AAP Subcommittee on Hyperbilirubinemia. Pediatrics. 2009"
+
+    expected_hemoglobin_by_age:
+      calculation: Reference range lookup
+      tolerance_type: relative
+      tolerance_value: 0.02  # ±2%
+      units: "g/dL"
+      rationale: |
+        Hemoglobin reference values are population statistics.
+        ±2% tolerance for interpolation between published values.
+      reference: "Harriet Lane Handbook"
+
+# ============================================================================
+# SPECIAL CASES & CROSS-CALCULATION RULES
+# ============================================================================
+
+cross_calculation_rules:
+  rule_1:
+    description: |
+      For calculations involving multiple steps (e.g., dose = weight × factor × adjustment),
+      apply tolerance at final step only, not intermediate steps.
+    example: "If A = 10.0, B = A × 2.5 = 25.0, final tolerance applies to 25.0 only"
+
+  rule_2:
+    description: |
+      For comparisons between language implementations:
+      Calculate tolerance as max(relative_tolerance, absolute_tolerance)
+      where both are present.
+    example: "If spec = relative:0.01 OR absolute:1.0, use whichever is larger"
+
+  rule_3:
+    description: |
+      For integer-based calculations (scores), require exact match (tolerance: 0).
+      For continuous calculations, apply specified tolerance.
+
+  rule_4:
+    description: |
+      If a calculation has documented clinical measurement error,
+      tolerance should be ≥ measurement error.
+    example: "Height measurement error ±1 cm → tolerance ≥ 0.5%"
+
+# ============================================================================
+# METADATA
+# ============================================================================
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2026-04-09"
+  author: "Timothy Hartzog, MD"
+  standards_referenced:
+    - IEEE 754 floating-point arithmetic
+    - Clinical measurement standardization
+    - Literature on inter-observer agreement
+    - Published pharmacokinetic studies
+  review_frequency: "Quarterly or upon clinical guideline updates"
+  approval: "Timothy Hartzog, MD | Clinical Validator"
