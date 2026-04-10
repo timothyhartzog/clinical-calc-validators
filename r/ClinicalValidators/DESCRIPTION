@@ -1,0 +1,20 @@
+Package: ClinicalValidators
+Title: Clinical Calculation Validators - Reference Implementations
+Version: 0.1.0
+Authors@R: person("Timothy", "Hartzog", email = "timothy@hartzog.me", role = c("aut", "cre"))
+Description: Reference implementations of pediatric and neonatal clinical calculations
+    verified against peer-reviewed literature and official guidelines (AAP Red Book, CDC).
+    Includes weight-based dosing, growth calculations, and severity scores.
+    Cross-validated with Python and Julia implementations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen2: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports:
+    testthat (>= 3.0.0)
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Repository: https://github.com/timothyhartzog/clinical-calc-validators
+BugReports: https://github.com/timothyhartzog/clinical-calc-validators/issues

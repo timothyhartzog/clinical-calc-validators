@@ -1,0 +1,74 @@
+name: Clinical Validation
+
+# Copy this file to your Julia repo's .github/workflows/validate.yml
+# It will automatically validate your Julia calculations against the
+# clinical-calc-validators reference implementations
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  julia-unit-tests:
+    name: Julia Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10'
+
+      - uses: julia-actions/cache@v1
+
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Run unit tests
+        run: julia --project=. -e 'using Pkg; Pkg.test()'
+
+  cross-validate-against-reference:
+    name: Cross-Validate vs Clinical Validators
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Clone clinical-calc-validators
+        run: |
+          git clone https://github.com/timothyhartzog/clinical-calc-validators.git
+
+      - name: Install Python dependencies
+        run: |
+          cd clinical-calc-validators
+          pip install -r python/requirements.txt
+
+      - name: Install Julia dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Run cross-validation tests
+        run: julia test/cross_validate.jl
+
+      - name: Generate validation report
+        if: always()
+        run: python scripts/validate_against_reference.py
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: |
+            validation_report.txt
+            julia_test_results.json
