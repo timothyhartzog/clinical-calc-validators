@@ -111,6 +111,104 @@ jobs:
         env:
           VALIDATION_TOLERANCE: "0.02"
 
+      - name: Run hemodynamics golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_hemodynamics_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run respiratory golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_respiratory_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run renal/electrolyte golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_renal_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run nutritional assessment golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_nutritional_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run metabolism and endocrinology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_metabolism_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.01"
+
+      - name: Run infectious disease golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_infectious_disease_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run hematology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_hematology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run gastroenterology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_gastroenterology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run neurology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_neurology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.0"
+
+      - name: Run cardiology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_cardiology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.0"
+
+      - name: Run critical care golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_critical_care_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.01"
+
+      - name: Run rheumatology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_rheumatology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run oncology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_oncology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
+      - name: Run toxicology golden cases
+        run: |
+          cd python
+          python -m pytest tests/test_toxicology_golden_cases.py -v --tb=short
+        env:
+          VALIDATION_TOLERANCE: "0.005"
+
       - name: Generate combined validation report
         if: always()
         run: |

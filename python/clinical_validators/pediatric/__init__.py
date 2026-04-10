@@ -27,6 +27,69 @@ from .hemodynamics import (
     cerebral_perfusion_pressure,
 )
 
+from .cardiology import (
+    CardiacFunctionResult,
+    HeartFailureSeverityResult,
+    ShockClassificationResult,
+    ArrhythmiaRiskResult,
+    cardiac_function_assessment,
+    heart_failure_severity_assessment,
+    shock_classification,
+    arrhythmia_risk_assessment,
+)
+
+from .critical_care import (
+    QSOFAScoreResult,
+    LactateInterpretationResult,
+    VasopressorDosageResult,
+    FluidResuscitationResult,
+    SepticShockAssessmentResult,
+    qsofa_score,
+    lactate_interpretation,
+    vasopressor_dose,
+    fluid_bolus_calculation,
+    septic_shock_assessment,
+)
+
+from .rheumatology import (
+    JADASScoreResult,
+    SLEDAIScoreResult,
+    InflammatoryMarkerResult,
+    ImmunoglobulinAssessmentResult,
+    VasculitisActivityScoreResult,
+    jadas_score,
+    sledai_score,
+    inflammatory_marker_interpretation,
+    immunoglobulin_assessment,
+    vasculitis_activity_score,
+)
+
+from .oncology import (
+    TumorRiskStratificationResult,
+    CTCAEToxicityResult,
+    CardiotoxicityRiskResult,
+    HematologicRecoveryResult,
+    NeutropeniaInfectionRiskResult,
+    tumor_risk_stratification,
+    ctcae_toxicity_scoring,
+    cardiotoxicity_risk_assessment,
+    hematologic_recovery_assessment,
+    neutropenia_infection_risk,
+)
+
+from .toxicology import (
+    AcetaminophenToxicityResult,
+    SalicylateToxicityResult,
+    IronToxicityResult,
+    DrugInducedHepatotoxicityResult,
+    ToxicIngestionRiskAssessmentResult,
+    acetaminophen_toxicity_assessment,
+    salicylate_toxicity_assessment,
+    iron_toxicity_assessment,
+    drug_induced_hepatotoxicity_assessment,
+    toxic_ingestion_risk_assessment,
+)
+
 __all__ = [
     # Dosing
     "Indication",
@@ -51,4 +114,57 @@ __all__ = [
     "shock_index",
     "body_surface_area",
     "cerebral_perfusion_pressure",
+    # Cardiology
+    "CardiacFunctionResult",
+    "HeartFailureSeverityResult",
+    "ShockClassificationResult",
+    "ArrhythmiaRiskResult",
+    "cardiac_function_assessment",
+    "heart_failure_severity_assessment",
+    "shock_classification",
+    "arrhythmia_risk_assessment",
+    # Critical Care & Sepsis
+    "QSOFAScoreResult",
+    "LactateInterpretationResult",
+    "VasopressorDosageResult",
+    "FluidResuscitationResult",
+    "SepticShockAssessmentResult",
+    "qsofa_score",
+    "lactate_interpretation",
+    "vasopressor_dose",
+    "fluid_bolus_calculation",
+    "septic_shock_assessment",
+    # Rheumatology & Immunology
+    "JADASScoreResult",
+    "SLEDAIScoreResult",
+    "InflammatoryMarkerResult",
+    "ImmunoglobulinAssessmentResult",
+    "VasculitisActivityScoreResult",
+    "jadas_score",
+    "sledai_score",
+    "inflammatory_marker_interpretation",
+    "immunoglobulin_assessment",
+    "vasculitis_activity_score",
+    # Pediatric Oncology
+    "TumorRiskStratificationResult",
+    "CTCAEToxicityResult",
+    "CardiotoxicityRiskResult",
+    "HematologicRecoveryResult",
+    "NeutropeniaInfectionRiskResult",
+    "tumor_risk_stratification",
+    "ctcae_toxicity_scoring",
+    "cardiotoxicity_risk_assessment",
+    "hematologic_recovery_assessment",
+    "neutropenia_infection_risk",
+    # Pediatric Toxicology
+    "AcetaminophenToxicityResult",
+    "SalicylateToxicityResult",
+    "IronToxicityResult",
+    "DrugInducedHepatotoxicityResult",
+    "ToxicIngestionRiskAssessmentResult",
+    "acetaminophen_toxicity_assessment",
+    "salicylate_toxicity_assessment",
+    "iron_toxicity_assessment",
+    "drug_induced_hepatotoxicity_assessment",
+    "toxic_ingestion_risk_assessment",
 ]

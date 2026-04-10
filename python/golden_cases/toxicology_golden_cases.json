@@ -1,0 +1,390 @@
+{
+  "metadata": {
+    "description": "Golden cases for pediatric toxicology assessment",
+    "source": "Rumack-Matthew nomogram, Done's salicylate classification, Tenenbein iron toxicity, Drug-Induced Liver Injury Network",
+    "tolerance_percent": 0.5,
+    "version": "1.0.0",
+    "last_updated": "2026-04-10",
+    "verified_by": "Timothy Hartzog, MD"
+  },
+  "toxicology_golden_cases": [
+    {
+      "id": "ACETAMINOPHEN_LOW_RISK_001",
+      "clinical_scenario": "5-year-old with accidental acetaminophen overdose, 4 hours post-ingestion, plasma level 12 mcg/mL",
+      "calculation_type": "acetaminophen_toxicity_assessment",
+      "inputs": {
+        "age_years": 5.0,
+        "weight_kg": 18.0,
+        "plasma_concentration_mcg_ml": 12.0,
+        "hours_post_ingestion": 4,
+        "reported_ingestion_amount_mg": null
+      },
+      "expected_output": {
+        "toxicity_category": "no_toxicity",
+        "risk_zone": "below_line",
+        "hours_post_ingestion": 4,
+        "recommendation": "observe",
+        "nac_loading_dose_mg_kg": null,
+        "liver_function_risk": "low"
+      },
+      "source": "Rumack-Matthew nomogram, below treatment line at 4 hours",
+      "calculation_method": "Plasma level 12 mcg/mL is below threshold of 30 mcg/mL at 4 hours",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Below treatment line; supportive care and monitoring sufficient"
+    },
+    {
+      "id": "ACETAMINOPHEN_INTERMEDIATE_RISK_001",
+      "clinical_scenario": "8-year-old with acetaminophen toxicity, 4 hours post-ingestion, plasma level 28 mcg/mL",
+      "calculation_type": "acetaminophen_toxicity_assessment",
+      "inputs": {
+        "age_years": 8.0,
+        "weight_kg": 25.0,
+        "plasma_concentration_mcg_ml": 28.0,
+        "hours_post_ingestion": 4,
+        "reported_ingestion_amount_mg": null
+      },
+      "expected_output": {
+        "toxicity_category": "low_risk",
+        "risk_zone": "possible_toxicity",
+        "hours_post_ingestion": 4,
+        "recommendation": "consider_nac_treatment",
+        "nac_loading_dose_mg_kg": 140.0,
+        "liver_function_risk": "moderate"
+      },
+      "source": "Rumack-Matthew nomogram, borderline toxicity zone",
+      "calculation_method": "Plasma level 28 mcg/mL near threshold of 30 mcg/mL at 4 hours",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "In possible toxicity zone; consider NAC for hepatoprotection"
+    },
+    {
+      "id": "ACETAMINOPHEN_HIGH_RISK_001",
+      "clinical_scenario": "6-year-old with significant acetaminophen toxicity, 2 hours post-ingestion, plasma level 120 mcg/mL",
+      "calculation_type": "acetaminophen_toxicity_assessment",
+      "inputs": {
+        "age_years": 6.0,
+        "weight_kg": 20.0,
+        "plasma_concentration_mcg_ml": 120.0,
+        "hours_post_ingestion": 2,
+        "reported_ingestion_amount_mg": null
+      },
+      "expected_output": {
+        "toxicity_category": "intermediate_risk",
+        "risk_zone": "probable_toxicity",
+        "hours_post_ingestion": 2,
+        "recommendation": "treat_with_nac",
+        "nac_loading_dose_mg_kg": 140.0,
+        "liver_function_risk": "high"
+      },
+      "source": "Rumack-Matthew nomogram, in toxicity zone",
+      "calculation_method": "Plasma level 120 mcg/mL above threshold (~100 mcg/mL at 2 hours)",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Intermediate risk for hepatotoxicity; NAC indicated"
+    },
+    {
+      "id": "SALICYLATE_MILD_TOXICITY_001",
+      "clinical_scenario": "10-year-old with mild aspirin toxicity, plasma salicylate 22 mg/dL",
+      "calculation_type": "salicylate_toxicity_assessment",
+      "inputs": {
+        "age_years": 10.0,
+        "weight_kg": 32.0,
+        "plasma_salicylate_mg_dl": 22.0,
+        "hours_post_ingestion": 3,
+        "ph_arterial": 7.48,
+        "respiratory_rate_min": 22
+      },
+      "expected_output": {
+        "toxicity_score": 25,
+        "toxicity_category": "mild",
+        "plasma_salicylate_mg_dl": 22.0,
+        "acid_base_status": "respiratory_alkalosis",
+        "activated_charcoal_indicated": false,
+        "dialysis_indicated": false,
+        "monitoring_frequency_hours": 4
+      },
+      "source": "Done's salicylate toxicity classification",
+      "calculation_method": "Plasma level 22 mg/dL in mild range (15-30 mg/dL)",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Mild toxicity with early respiratory alkalosis; supportive care"
+    },
+    {
+      "id": "SALICYLATE_SEVERE_TOXICITY_001",
+      "clinical_scenario": "9-year-old with severe salicylate toxicity, plasma level 75 mg/dL, acidotic",
+      "calculation_type": "salicylate_toxicity_assessment",
+      "inputs": {
+        "age_years": 9.0,
+        "weight_kg": 28.0,
+        "plasma_salicylate_mg_dl": 75.0,
+        "hours_post_ingestion": 8,
+        "ph_arterial": 7.28,
+        "respiratory_rate_min": 28
+      },
+      "expected_output": {
+        "toxicity_score": 75,
+        "toxicity_category": "severe",
+        "plasma_salicylate_mg_dl": 75.0,
+        "acid_base_status": "metabolic_acidosis",
+        "activated_charcoal_indicated": true,
+        "dialysis_indicated": true,
+        "monitoring_frequency_hours": 1
+      },
+      "source": "Done's salicylate classification, late metabolic acidosis",
+      "calculation_method": "Plasma level 75 mg/dL in severe range (60-100 mg/dL); metabolic acidosis present",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Severe toxicity with metabolic acidosis; hemodialysis indicated; intensive monitoring"
+    },
+    {
+      "id": "IRON_LOW_RISK_001",
+      "clinical_scenario": "7-year-old with iron ingestion, serum iron 120 mcg/dL, TIBC 350 mcg/dL",
+      "calculation_type": "iron_toxicity_assessment",
+      "inputs": {
+        "age_years": 7.0,
+        "weight_kg": 23.0,
+        "serum_iron_mcg_dl": 120.0,
+        "tibc_mcg_dl": 350.0,
+        "hours_post_ingestion": 2,
+        "reported_dose_mg": null
+      },
+      "expected_output": {
+        "toxicity_category": "mild",
+        "serum_iron_level_mcg_dl": 120.0,
+        "tibc_mcg_dl": 350.0,
+        "iron_tibc_ratio": 0.34,
+        "phase_of_illness": "phase_1_gi",
+        "chelation_indicated": false,
+        "deferoxamine_loading_dose_mg_kg": null,
+        "monitoring_interval_hours": 8
+      },
+      "source": "Iron toxicity assessment, low iron level",
+      "calculation_method": "Serum iron 120 mcg/dL in mild range (100-300); iron-TIBC ratio 0.34",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.005,
+      "notes": "Mild iron toxicity; supportive care; monitor for progression"
+    },
+    {
+      "id": "IRON_HIGH_RISK_001",
+      "clinical_scenario": "6-year-old with significant iron overdose, serum iron 680 mcg/dL, TIBC 350 mcg/dL, 4 hours post-ingestion",
+      "calculation_type": "iron_toxicity_assessment",
+      "inputs": {
+        "age_years": 6.0,
+        "weight_kg": 20.0,
+        "serum_iron_mcg_dl": 680.0,
+        "tibc_mcg_dl": 350.0,
+        "hours_post_ingestion": 4,
+        "reported_dose_mg": null
+      },
+      "expected_output": {
+        "toxicity_category": "severe",
+        "serum_iron_level_mcg_dl": 680.0,
+        "tibc_mcg_dl": 350.0,
+        "iron_tibc_ratio": 1.94,
+        "phase_of_illness": "phase_1_gi",
+        "chelation_indicated": true,
+        "deferoxamine_loading_dose_mg_kg": 15.0,
+        "monitoring_interval_hours": 4
+      },
+      "source": "Iron toxicity with iron exceeding TIBC",
+      "calculation_method": "Serum iron 680 mcg/dL well above 500 threshold; iron-TIBC ratio 1.94 >1.0",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.005,
+      "notes": "Severe iron toxicity; immediate deferoxamine chelation indicated"
+    },
+    {
+      "id": "HEPATOTOXICITY_NO_INJURY_001",
+      "clinical_scenario": "11-year-old on isoniazid for TB prophylaxis, routine monitoring, normal LFTs",
+      "calculation_type": "drug_induced_hepatotoxicity_assessment",
+      "inputs": {
+        "age_years": 11.0,
+        "weight_kg": 35.0,
+        "alt_iu_l": 28.0,
+        "ast_iu_l": 26.0,
+        "bilirubin_mg_dl": 0.6,
+        "albumin_g_dl": 4.2,
+        "inr": 1.0,
+        "days_on_drug": 14
+      },
+      "expected_output": {
+        "toxicity_grade": 0,
+        "risk_category": "no_injury",
+        "alt_iu_l": 28.0,
+        "ast_iu_l": 26.0,
+        "alt_ast_ratio": 1.08,
+        "bilirubin_mg_dl": 0.6,
+        "inr": 1.0,
+        "liver_synthetic_function_impaired": false,
+        "fulminant_hepatic_failure_risk": "low",
+        "recommendation": "Continue monitoring",
+        "monitoring_frequency_hours": 72
+      },
+      "source": "Normal hepatic function on drug therapy",
+      "calculation_method": "ALT 28 within normal range; normal synthetic function markers",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "No evidence of drug-induced liver injury; continue therapy with routine monitoring"
+    },
+    {
+      "id": "HEPATOTOXICITY_MODERATE_INJURY_001",
+      "clinical_scenario": "14-year-old on anti-TB therapy, elevated transaminases, ALT 180 IU/L, normal bilirubin",
+      "calculation_type": "drug_induced_hepatotoxicity_assessment",
+      "inputs": {
+        "age_years": 14.0,
+        "weight_kg": 45.0,
+        "alt_iu_l": 180.0,
+        "ast_iu_l": 145.0,
+        "bilirubin_mg_dl": 0.8,
+        "albumin_g_dl": 4.0,
+        "inr": 1.1,
+        "days_on_drug": 21
+      },
+      "expected_output": {
+        "toxicity_grade": 2,
+        "risk_category": "low_risk",
+        "alt_iu_l": 180.0,
+        "ast_iu_l": 145.0,
+        "alt_ast_ratio": 1.24,
+        "bilirubin_mg_dl": 0.8,
+        "inr": 1.1,
+        "liver_synthetic_function_impaired": false,
+        "fulminant_hepatic_failure_risk": "low",
+        "recommendation": "Monitor LFTs, consider continuing drug with close follow-up",
+        "monitoring_frequency_hours": 24
+      },
+      "source": "Drug-induced transaminitis with preserved synthetic function",
+      "calculation_method": "ALT 180 is 4.5x upper normal (40); grade 2 hepatotoxicity; preserved synthetic function",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Moderate elevation but low-risk; monitor closely; most likely resolves with continued observation"
+    },
+    {
+      "id": "HEPATOTOXICITY_SEVERE_INJURY_001",
+      "clinical_scenario": "10-year-old with acute liver injury on amoxicillin-clavulanate, ALT 520, total bilirubin 3.2, INR 2.1",
+      "calculation_type": "drug_induced_hepatotoxicity_assessment",
+      "inputs": {
+        "age_years": 10.0,
+        "weight_kg": 30.0,
+        "alt_iu_l": 520.0,
+        "ast_iu_l": 480.0,
+        "bilirubin_mg_dl": 3.2,
+        "albumin_g_dl": 2.8,
+        "inr": 2.1,
+        "days_on_drug": 10
+      },
+      "expected_output": {
+        "toxicity_grade": 4,
+        "risk_category": "high_risk",
+        "alt_iu_l": 520.0,
+        "ast_iu_l": 480.0,
+        "alt_ast_ratio": 1.08,
+        "bilirubin_mg_dl": 3.2,
+        "inr": 2.1,
+        "liver_synthetic_function_impaired": true,
+        "fulminant_hepatic_failure_risk": "high",
+        "recommendation": "Hold drug immediately, intensive care management",
+        "monitoring_frequency_hours": 4
+      },
+      "source": "Severe drug-induced liver injury with coagulopathy",
+      "calculation_method": "ALT 520 >20x normal (40); bilirubin >3 raises to grade 4; impaired synthetic function (INR 2.1)",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "High-risk hepatotoxicity; discontinue drug immediately; hepatology + ICU consultation"
+    },
+    {
+      "id": "TOXIC_INGESTION_ACETAMINOPHEN_LOW_DOSE_001",
+      "clinical_scenario": "4-year-old with accidental acetaminophen ingestion, 500 mg reported",
+      "calculation_type": "toxic_ingestion_risk_assessment",
+      "inputs": {
+        "age_years": 4.0,
+        "weight_kg": 16.0,
+        "substance": "acetaminophen",
+        "reported_dose_mg": 500.0,
+        "hours_post_ingestion": 0.5,
+        "symptoms_present": false
+      },
+      "expected_output": {
+        "risk_score": 0,
+        "risk_category": "non_toxic",
+        "estimated_toxicity_severity": "asymptomatic",
+        "onset_hours": 0,
+        "peak_toxicity_hours": 4,
+        "substance_type": "acetaminophen",
+        "decontamination_indicated": true,
+        "antidote_available": true,
+        "antidote_name": "N-acetylcysteine",
+        "disposition": "outpatient_observation",
+        "hospitalization_threshold_met": false
+      },
+      "source": "Toxic ingestion assessment, sub-toxic acetaminophen dose",
+      "calculation_method": "Dose 500 mg = 31 mg/kg; below toxic threshold of 150 mg/kg",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "Non-toxic ingestion; no specific therapy needed; consider activated charcoal if within 1-2 hours"
+    },
+    {
+      "id": "TOXIC_INGESTION_IRON_HIGH_DOSE_001",
+      "clinical_scenario": "6-year-old with iron supplement bottle ingestion, estimated 1200 mg dose",
+      "calculation_type": "toxic_ingestion_risk_assessment",
+      "inputs": {
+        "age_years": 6.0,
+        "weight_kg": 20.0,
+        "substance": "iron",
+        "reported_dose_mg": 1200.0,
+        "hours_post_ingestion": 1.5,
+        "symptoms_present": false
+      },
+      "expected_output": {
+        "risk_score": 75,
+        "risk_category": "high_risk",
+        "estimated_toxicity_severity": "severe",
+        "onset_hours": 1,
+        "peak_toxicity_hours": 6,
+        "substance_type": "iron",
+        "decontamination_indicated": true,
+        "antidote_available": true,
+        "antidote_name": "Deferoxamine",
+        "disposition": "icu",
+        "hospitalization_threshold_met": true
+      },
+      "source": "Toxic iron ingestion assessment",
+      "calculation_method": "Dose 1200 mg = 60 mg/kg; far exceeds toxic threshold of 20 mg/kg",
+      "verified_by": "Timothy Hartzog, MD",
+      "confidence": "HIGH",
+      "tolerance": 0.0,
+      "notes": "High-risk iron poisoning; activated charcoal not effective; may require chelation depending on levels"
+    }
+  ],
+  "validation_schema": {
+    "required_fields": [
+      "id",
+      "clinical_scenario",
+      "calculation_type",
+      "inputs",
+      "expected_output",
+      "source",
+      "verified_by"
+    ]
+  },
+  "tolerance_explanation": {
+    "rationale": "Clinical assessment with appropriate tolerance for measurement variation (0.5%). Different interpretation for categorical vs numeric:",
+    "factors": [
+      "Categorical outputs (toxicity_category, risk_zone): tolerance=0.0 (must match exactly)",
+      "Numeric scores (risk_score, toxicity_score): tolerance=0.005 (±0.5%)",
+      "Concentration measurements: ±2% acceptable variation",
+      "Ratios and derived values: tolerance as specified per test"
+    ]
+  }
+}
